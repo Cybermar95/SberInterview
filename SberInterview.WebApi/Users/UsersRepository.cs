@@ -12,9 +12,8 @@ namespace SberInterview.WebApi.Users
             _context = context;
         }
 
-        public Task<User> GetUserByLoginAsync(string login)
-        {
-            return _context.Users.SingleAsync(u => u.Login == login);
-        }
+        // ѕри добавлении user нет проверку на уникальность, SingleAsync может выбрасывать ошибки.
+        // ƒобавил await что бы избежать обращени€ в пределах 1 контекста.
+        public async Task<User> GetUserByLoginAsync(string login) => await _context.Users.SingleAsync(u => u.Login == login);
     }
 }

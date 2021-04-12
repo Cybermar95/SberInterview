@@ -16,16 +16,23 @@ namespace SberInterview.WebApi
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Необходимо создать интерфейс ISberDbContext и внедрять зависимость на этот интерфейс (Ioc)
             services.AddDbContext<SberDbContext>();
-            services.AddSingleton<UsersRepository>();
-            
+
+            // Использование AddSingleton потенциально приведёт к ошибке DbContext при одновременно обращении к API.
+            // Опять внедрение зависимости не через интерфейс. (Ioc).
+            services.AddScoped<UsersRepository>();
+
             services.AddControllers();
+
+            // Отсутствуют внедрения зависимостей на ILoggerFactory, IMediator, UsersRepository, IMapper
+            // хотя данные зависимости используются в классах.
+
+            // Что бы не засорять ConfigureServices, Внедрение всех зависимостей можно вынести в отдельный метод/методы расширения IServiceCollection.
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
